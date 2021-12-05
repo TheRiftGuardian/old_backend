@@ -1,19 +1,8 @@
 let express = require('express');
 let mongoose = require('mongoose');
-let EmployeeModel = require('./models/employee');
+let EmployeeModel = require('../models/employee');
 
 const app = express();
-
-// middleware
-app.use(express.json());
-
-mongoose.connect(
-	'mongodb+srv://TheRiftGuardian:S6fdxxikdhRL29K@comp3123.okoru.mongodb.net/101289239_assignment2?retryWrites=true&w=majority',
-	{
-		useNewUrlParser: true,
-		useUnifiedTopology: true
-	}
-);
 
 app.get('/', (req, res) => {
 	res.send('<h1>Employees Database</h1>');
@@ -24,8 +13,8 @@ app.post('/api/v1/employees', async (req, res) => {
 	const new_employee = EmployeeModel(req.body);
 	try {
 		await new_employee.save();
-		res.send(new_employee);
-		res.status(200).send('A new Employee resource is created.');
+		res.status(201).send(new_employee);
+		res.send('A new Employee resource is created.');
 	} catch (err) {
 		res.status(500).send(err);
 	}
@@ -74,14 +63,11 @@ app.delete('/api/v1/employees/:id', async (req, res) => {
 	try {
 		const deleted_employee = await EmployeeModel.findByIdAndDelete(req.params.id);
 
-		if (res.status(204)) res.status.send('Employee resource is deleted.');
+		if (res.status(204)) res.send('Employee resource is deleted.');
 	} catch (err) {
 		res.status(500).send(err);
+		console.log(err);
 	}
-});
-
-app.listen(9090, () => {
-	console.log('Server running at port 9090');
 });
 
 module.exports = app;
